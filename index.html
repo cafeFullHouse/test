@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>おぢさんもんじゃ</title>
+    <style>
+        #recordingAudios audio{
+            width: 66.6666%;
+            max-width: none; 
+            margin: 10px 0;
+            display: block;
+            transform-origin: center;
+        }
+
+        #recordBtn{
+            font-weight: bold;
+            font-size: 1.2em;
+            text-decoration: none;
+            background: #ec84a7;
+            color: white;
+            margin: 0px 10px;
+            padding: 7px 15px;
+            border-radius: 20px;
+        }
+
+        #stopBtn{
+            font-weight: bold;
+            font-size: 1.2em;
+            text-decoration: none;
+            background: #84bdec;
+            color: white;
+            margin: 0px 10px;
+            padding: 7px 15px;
+            border-radius: 20px;
+        }
+
+        button:disabled {
+            filter: saturate(0.1);
+            cursor: not-allowed;
+        }
+
+    </style>
+</head>
+<body>
+    <button id="recordBtn">▶ 録音開始</button>
+    <button id="stopBtn" disabled>■ 停止</button>
+
+    <h3>録音した音声</h3>
+    <div id="recordingAudios"></div>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let stream = null;
+
+        const recordBtn = document.getElementById("recordBtn");
+        const stopBtn = document.getElementById("stopBtn");
+        const recordingAudios = document.getElementById("recordingAudios");
+
+        recordBtn.onclick = async () => {
+            if (!stream) {
+                stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            }
+            
+
+            mediaRecorder = new MediaRecorder(stream);
+
+            audioChunks = [];
+            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+                const audioURL = URL.createObjectURL(audioBlob);
+                
+                const audio = document.createElement("audio");
+                audio.controls = true;
+                audio.src = audioURL;
+
+                recordingAudios.appendChild(audio);
+            };
+
+            mediaRecorder.start();
+            recordBtn.disabled = true;
+            stopBtn.disabled = false;
+        };
+
+        stopBtn.onclick = () => {
+            mediaRecorder.stop();
+            recordBtn.disabled = false;
+            stopBtn.disabled = true;
+        };
+    </script>
+</body>
+</html>
