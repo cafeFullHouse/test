@@ -79,13 +79,13 @@
             }
             
 
-            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder = new MediaRecorder(stream,{mimeType});
 
             audioChunks = [];
             mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
 
             mediaRecorder.onstop = () => {
-                const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+                const audioBlob = new Blob(audioChunks, { type: mimeType });
                 const audioURL = URL.createObjectURL(audioBlob);
                 
                 const audio = document.createElement("audio");
