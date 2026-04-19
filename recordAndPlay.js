@@ -48,6 +48,7 @@ recordBtn.onclick = async () => {
         lastBlob = audioBlob;
         
         audio.src = audioURL;
+        recordBtn.disabled = false; 
     };
 
     mediaRecorder.start();
@@ -57,7 +58,6 @@ recordBtn.onclick = async () => {
 
 stopBtn.onclick = () => {
     mediaRecorder.stop();
-    recordBtn.disabled = false;
     stopBtn.disabled = true;
     nextBtn.disabled = false;
     };
